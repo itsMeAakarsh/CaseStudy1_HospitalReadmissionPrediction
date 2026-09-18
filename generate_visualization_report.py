@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 root = Path(__file__).resolve().parent
+output_dir = root / "evaluation"
+output_dir.mkdir(exist_ok=True)
 
 patients = pd.read_csv(root / "patients.csv")
 admissions = pd.read_csv(root / "admissions.csv")
@@ -60,7 +62,7 @@ plt.ylim(0, max(age_rate.max() * 1.2, 0.12))
 for bar, value in zip(ax.patches, age_rate.values):
     ax.text(bar.get_x() + bar.get_width() / 2, value + 0.005, f"{value * 100:.1f}%", ha="center", va="bottom")
 plt.tight_layout()
-plt.savefig(root / "viz_age_readmission.png", dpi=150)
+plt.savefig(output_dir / "viz_age_readmission.png", dpi=150)
 plt.close()
 
 # Plot 2 - Insurance type
@@ -74,7 +76,7 @@ plt.xticks(rotation=20, ha="right")
 for bar, value in zip(ins_plot.patches, insurance_rate.values):
     ins_plot.text(bar.get_x() + bar.get_width() / 2, value + 0.005, f"{value * 100:.1f}%", ha="center", va="bottom")
 plt.tight_layout()
-plt.savefig(root / "viz_insurance_readmission.png", dpi=150)
+plt.savefig(output_dir / "viz_insurance_readmission.png", dpi=150)
 plt.close()
 
 # Plot 3 - Diagnosis category
@@ -96,14 +98,14 @@ if any(col.startswith("diag_") for col in df.columns):
     for bar, value in zip(ax.patches, diag_df.head(8)["readmission_rate"].values):
         ax.text(bar.get_x() + bar.get_width() / 2, value + 0.003, f"{value * 100:.1f}%", ha="center", va="bottom")
     plt.tight_layout()
-    plt.savefig(root / "viz_diag_readmission.png", dpi=150)
+    plt.savefig(output_dir / "viz_diag_readmission.png", dpi=150)
     plt.close()
 else:
     plt.figure(figsize=(8, 6))
     plt.text(0.5, 0.5, "No diagnosis category flags available", ha="center", va="center")
     plt.axis("off")
     plt.tight_layout()
-    plt.savefig(root / "viz_diag_readmission.png", dpi=150)
+    plt.savefig(output_dir / "viz_diag_readmission.png", dpi=150)
     plt.close()
 
 # Plot 4 - Cost by tier
@@ -118,14 +120,14 @@ if not cost_by_tier.empty:
     plt.xlabel("Hospital Tier")
     plt.xticks(rotation=0)
     plt.tight_layout()
-    plt.savefig(root / "viz_cost_tier.png", dpi=150)
+    plt.savefig(output_dir / "viz_cost_tier.png", dpi=150)
     plt.close()
 else:
     plt.figure(figsize=(8, 6))
     plt.text(0.5, 0.5, "Cost data unavailable", ha="center", va="center")
     plt.axis("off")
     plt.tight_layout()
-    plt.savefig(root / "viz_cost_tier.png", dpi=150)
+    plt.savefig(output_dir / "viz_cost_tier.png", dpi=150)
     plt.close()
 
 # Plot 5 - LOS by readmission
@@ -138,7 +140,7 @@ plt.ylabel("Length of Stay (days)")
 for bar, value in zip(bars, los_summary["los_days"]):
     plt.text(bar.get_x() + bar.get_width()/2, value + 0.2, f"{value:.1f}", ha="center")
 plt.tight_layout()
-plt.savefig(root / "viz_los_readmission.png", dpi=150)
+plt.savefig(output_dir / "viz_los_readmission.png", dpi=150)
 plt.close()
 
 # Plot 6 - Monthly trend
@@ -151,7 +153,7 @@ plt.xlabel("Month")
 plt.ylabel("Readmission Rate (%)")
 plt.xticks(rotation=45)
 plt.tight_layout()
-plt.savefig(root / "viz_monthly_trend.png", dpi=150)
+plt.savefig(output_dir / "viz_monthly_trend.png", dpi=150)
 plt.close()
 
 # Generate markdown report
@@ -203,9 +205,9 @@ This report examines 30-day and 7-day readmission patterns using the hospital re
 4. Combining these variables supports a more evidence-based clinical and operational dashboard.
 """
 
-(root / "data_visualization_report.md").write_text(report, encoding="utf-8")
+(output_dir / "data_visualization_report.md").write_text(report, encoding="utf-8")
 
-print("Generated visualizations and summary report in:", root)
+print("Generated visualizations and summary report in:", output_dir)
 print("Files created:")
 for name in [
     "viz_age_readmission.png",
